@@ -32,7 +32,7 @@ ActiveAdmin.after_load do |app|
       # Register a scope for every namespace that exists.
       # The current namespace will be the default scope.
       app.namespaces.map(&:name).each do |name|
-        scope name, default: namespace.name == name do |scope|
+        scope name do |scope|
           scope.where namespace: name.to_s
         end
       end
@@ -40,7 +40,7 @@ ActiveAdmin.after_load do |app|
       # Store the author and namespace
       before_save do |comment|
         comment.namespace = active_admin_config.namespace.name
-        comment.author    = current_active_admin_user
+        comment.author = current_active_admin_user
       end
 
       controller do
