@@ -32,7 +32,8 @@ ActiveAdmin.after_load do |app|
       # Register a scope for every namespace that exists.
       # The current namespace will be the default scope.
       app.namespaces.map(&:name).each do |name|
-        scope name, default: namespace.name == name do |scope|
+        scope_name = name.is_a?(Array) ? "/#{name.join('/')}" : name
+        scope scope_name, default: namespace.name == name do |scope|
           scope.where namespace: name.to_s
         end
       end
