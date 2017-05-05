@@ -31,14 +31,18 @@ module ActiveAdmin
 
     def initialize(application, name)
       @application = application
-      @name = name.to_s.underscore
+      @name = name.is_a?(Array) ? name : name.to_s.underscore
       @resources = ResourceCollection.new
       register_module unless root?
       build_menu_collection
     end
 
     def name
-      @name.to_sym
+      if @name.is_a?(Array)
+        @name
+      else
+        @name.to_sym
+      end
     end
 
     # Register a resource into this namespace. The preffered method to access this is to
@@ -82,11 +86,19 @@ module ActiveAdmin
     #   Namespace.new(:root).module_name # => nil
     #
     def module_name
-      root? ? nil : @name.camelize
+      root? ? nil : if @name.is_a?(Array)
+                      @name.map(&:to_s).map(&:camelize).join('::')
+                    else
+                      @name.camelize
+                    end
     end
 
     def route_prefix
-      root? ? nil : @name
+      root? ? nil : if @name.is_a?(Array)
+                      @name.map(&:to_s).join('_').underscore
+                    else
+                      @name
+                    end
     end
 
     # Unload all the registered resources for this namespace
