@@ -38,17 +38,10 @@ module ActiveAdmin
     def authenticate_active_admin_user
       auth_method = active_admin_namespace.authentication_method
       if auth_method && auth_method.is_a?(Proc)
+        # clear the non-root default namespace
         namespace = begin
           ns = active_admin_namespace.name
-          if ns && ns.is_a?(Array)
-            if active_admin_namespace.application.default_namespace == :root
-              ns
-            else
-              ns.drop(1)
-            end
-          else
-            ns
-          end
+          (ns && ns.is_a?(Array) && active_admin_namespace.application.default_namespace != :root) ? ns.drop(1) : ns
         end
         send(auth_method.call(namespace))
       else
@@ -59,17 +52,10 @@ module ActiveAdmin
     def current_active_admin_user
       user_method = active_admin_namespace.current_user_method
       if user_method && user_method.is_a?(Proc)
+        # clear the non-root default namespace
         namespace = begin
           ns = active_admin_namespace.name
-          if ns && ns.is_a?(Array)
-            if active_admin_namespace.application.default_namespace == :root
-              ns
-            else
-              ns.drop(1)
-            end
-          else
-            ns
-          end
+          (ns && ns.is_a?(Array) && active_admin_namespace.application.default_namespace != :root) ? ns.drop(1) : ns
         end
         send(user_method.call(namespace))
       else

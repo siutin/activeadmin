@@ -154,18 +154,8 @@ module ActiveAdmin
     def add_logout_button_to_menu(menu, priority = 20, html_options = {})
       if logout_link_path
         computed_logout_link_path = if logout_link_path.is_a?(Proc)
-                                      namespace = begin
-                                        ns = name
-                                        if ns && ns.is_a?(Array)
-                                          if application.default_namespace == :root
-                                            ns
-                                          else
-                                            ns.drop(1)
-                                          end
-                                        else
-                                          ns
-                                        end
-                                      end
+                                      # clear the non-root default namespace
+                                      namespace = (name && name.is_a?(Array) && application.default_namespace != :root) ? name.drop(1) : name
                                       logout_link_path.call(namespace)
                                     else
                                       logout_link_path
