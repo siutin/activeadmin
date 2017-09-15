@@ -31,7 +31,12 @@ module ActiveAdmin
 
     def initialize(application, name)
       @application = application
-      @name = name.is_a?(Array) ? name : name.to_s.underscore
+      @name = if name.is_a?(Array)
+                dns = application.default_namespace
+                (dns == :root) ? name : [dns] + name
+              else
+                name.to_s.underscore
+              end
       @resources = ResourceCollection.new
       register_module unless root?
       build_menu_collection
@@ -148,11 +153,30 @@ module ActiveAdmin
     #
     def add_logout_button_to_menu(menu, priority = 20, html_options = {})
       if logout_link_path
-        html_options = html_options.reverse_merge(method: logout_link_method || :get)
-        menu.add id: 'logout', priority: priority, html_options: html_options,
-          label: ->{ I18n.t 'active_admin.logout' },
-          url:   ->{ render_or_call_method_or_proc_on self, active_admin_namespace.logout_link_path },
-          if:    :current_active_admin_user?
+        computed_logout_link_path = if logout_link_path.is_a?(Proc)
+                                      namespace = begin
+                                        ns = name
+                                        if ns && ns.is_a?(Array)
+                                          if application.default_namespace == :root
+                                            ns
+                                          else
+                                            ns.drop(1)
+                                          end
+                                        else
+                                          ns
+                                        end
+                                      end
+                                      logout_link_path.call(namespace)
+                                    else
+                                      logout_link_path
+                                    end
+        if computed_logout_link_path
+          html_options = html_options.reverse_merge(method: logout_link_method || :get)
+          menu.add id: 'logout', priority: priority, html_options: html_options,
+                   label:   -> { I18n.t 'active_admin.logout' },
+                   url:   computed_logout_link_path,
+                   if:    :current_active_admin_user?
+        end
       end
     end
 

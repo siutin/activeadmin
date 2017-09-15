@@ -20,11 +20,24 @@ module ActiveAdmin
     end
 
     def self.find_for_resource_in_namespace(resource, namespace)
+      _namespace = begin
+        ns = namespace
+        if ns && ns.is_a?(Array)
+          if ActiveAdmin.application.default_namespace == :root
+            ns
+          else
+            ns.drop(1)
+          end
+        else
+          ns.to_sym
+        end
+      end
+
       where(
-        resource_type: resource_type(resource),
-        resource_id:   resource,
-        namespace:     namespace.to_s
-      ).order(ActiveAdmin.application.namespaces[namespace.to_sym].comments_order)
+          resource_type: resource_type(resource),
+          resource_id: resource,
+          namespace: _namespace.to_s
+      ).order(ActiveAdmin.application.namespaces[_namespace].comments_order)
     end
 
     def set_resource_type

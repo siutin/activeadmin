@@ -4,14 +4,14 @@ require 'active_admin/orm/active_record/comments/namespace_helper'
 require 'active_admin/orm/active_record/comments/resource_helper'
 
 # Add the comments configuration
-ActiveAdmin::Application.inheritable_setting :comments,                   true
+ActiveAdmin::Application.inheritable_setting :comments, true
 ActiveAdmin::Application.inheritable_setting :comments_registration_name, 'Comment'
-ActiveAdmin::Application.inheritable_setting :comments_order,             "created_at ASC"
-ActiveAdmin::Application.inheritable_setting :comments_menu,              {}
+ActiveAdmin::Application.inheritable_setting :comments_order, "created_at ASC"
+ActiveAdmin::Application.inheritable_setting :comments_menu, {}
 
 # Insert helper modules
 ActiveAdmin::Namespace.send :include, ActiveAdmin::Comments::NamespaceHelper
-ActiveAdmin::Resource.send  :include, ActiveAdmin::Comments::ResourceHelper
+ActiveAdmin::Resource.send :include, ActiveAdmin::Comments::ResourceHelper
 ActiveAdmin.application.view_factory.show_page.send :include, ActiveAdmin::Comments::ShowPageHelper
 
 # Load the model as soon as it's referenced. By that point, Rails & Kaminari will be ready
@@ -25,22 +25,43 @@ ActiveAdmin.after_load do |app|
 
       menu namespace.comments ? namespace.comments_menu : false
 
-      config.comments      = false # Don't allow comments on comments
+      config.comments = false # Don't allow comments on comments
       config.batch_actions = false # The default destroy batch action isn't showing up anyway...
 
       scope :all, show_count: false
       # Register a scope for every namespace that exists.
       # The current namespace will be the default scope.
       app.namespaces.map(&:name).each do |name|
-        scope name, default: namespace.name == name do |scope|
-          scope.where namespace: name.to_s
+        ns = if name && name.is_a?(Array)
+               if app.default_namespace == :root
+                 name
+               else
+                 name.drop(1)
+               end
+             else
+               name
+             end
+        scope ns do |scope|
+          scope.where namespace: ns.to_s
         end
       end
 
       # Store the author and namespace
       before_save do |comment|
-        comment.namespace = active_admin_config.namespace.name
-        comment.author    = current_active_admin_user
+        ns = begin
+          name = active_admin_config.namespace.name
+          if name && name.is_a?(Array)
+            if app.default_namespace == :root
+              name
+            else
+              name.drop(1)
+            end
+          else
+            name
+          end
+        end
+        comment.namespace = ns
+        comment.author = current_active_admin_user
       end
 
       controller do
@@ -78,11 +99,11 @@ ActiveAdmin.after_load do |app|
 
       index do
         column I18n.t('active_admin.comments.resource_type'), :resource_type
-        column I18n.t('active_admin.comments.author_type'),   :author_type
-        column I18n.t('active_admin.comments.resource'),      :resource
-        column I18n.t('active_admin.comments.author'),        :author
-        column I18n.t('active_admin.comments.body'),          :body
-        column I18n.t('active_admin.comments.created_at'),    :created_at
+        column I18n.t('active_admin.comments.author_type'), :author_type
+        column I18n.t('active_admin.comments.resource'), :resource
+        column I18n.t('active_admin.comments.author'), :author
+        column I18n.t('active_admin.comments.body'), :body
+        column I18n.t('active_admin.comments.created_at'), :created_at
         actions
       end
     end
