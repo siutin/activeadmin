@@ -240,8 +240,29 @@ module ActiveAdmin
 
     # Creates a ruby module to namespace all the classes in if required
     def register_module
-      unless Object.const_defined? module_name
-        Object.const_set module_name, Module.new
+      # dynamically create nested modules
+      module_names = module_name.split("::").inject([]) { |n, c| n << (n.present? ? [n.last] + [c] : [c]).flatten }
+      module_names.each_with_index do |module_name_array, i|
+        *prefix, parent, child = module_name_array
+        prefix_module_name = prefix.join("::")
+
+        parent_module_name_with_prefix = (prefix + [parent]).join("::")
+        child_module_name_with_prefix = module_name_array.join("::")
+
+        parent_module = if Object.const_defined? parent_module_name_with_prefix
+                          Object.const_get parent_module_name_with_prefix
+                        else
+                          if i == 0
+                            Object.const_set parent, Module.new
+                          else
+                            prefix_module = Object.const_get(prefix_module_name)
+                            prefix_module.const_set parent, Module.new
+                          end
+                        end
+
+        unless Object.const_defined? child_module_name_with_prefix
+          parent_module.const_set child, Module.new
+        end
       end
     end
 
