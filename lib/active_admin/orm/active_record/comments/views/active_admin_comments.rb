@@ -51,7 +51,6 @@ module ActiveAdmin
 
         def comments_url(*args)
           parts = []
-          # parts << active_admin_namespace.name unless active_admin_namespace.root?
           parts << unless active_admin_namespace.root?
                      _name = active_admin_namespace.name
                      _name = if _name.is_a?(Array)
@@ -67,7 +66,6 @@ module ActiveAdmin
 
         def comment_form_url
           parts = []
-          # parts << active_admin_namespace.name unless active_admin_namespace.root?
           parts << unless active_admin_namespace.root?
                      _name = active_admin_namespace.name
                      _name = if _name.is_a?(Array)
