@@ -20,13 +20,17 @@ module ActiveAdmin
     end
 
     def self.find_for_resource_in_namespace(resource, namespace)
-      _name = namespace
-      _name = (_name && _name.is_a?(Array)) ? _name.drop(1) : _name
+      _namespace, namespace_key = if namespace.is_a?(Array)
+                                      _name = namespace.drop(1)
+                                      [_name, _name]
+                                    else
+                                      [namespace, namespace.to_sym]
+                                    end
       where(
           resource_type: resource_type(resource),
           resource_id: resource,
-          namespace: _name.to_s
-      ).order(ActiveAdmin.application.namespaces[_name].comments_order)
+          namespace: _namespace.to_s
+      ).order(ActiveAdmin.application.namespaces[namespace_key].comments_order)
     end
 
     def set_resource_type
