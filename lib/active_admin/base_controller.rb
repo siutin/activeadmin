@@ -37,29 +37,33 @@ module ActiveAdmin
     # Calls the authentication method as defined in ActiveAdmin.authentication_method
     def authenticate_active_admin_user
       auth_method = active_admin_namespace.authentication_method
-      if auth_method && auth_method.is_a?(Proc)
-        # clear the non-root default namespace
-        namespace = begin
-          _name = active_admin_namespace.name
-          (_name && _name.is_a?(Array)) ? _name.drop(1) : _name
+      if auth_method
+        if auth_method.is_a?(Proc)
+          # clear the non-root default namespace
+          namespace = begin
+            _name = active_admin_namespace.name
+            (_name && _name.is_a?(Array)) ? _name.drop(1) : _name
+          end
+          send(auth_method.call(namespace))
+        else
+          send(auth_method)
         end
-        send(auth_method.call(namespace))
-      else
-        send(auth_method)
       end
     end
 
     def current_active_admin_user
       user_method = active_admin_namespace.current_user_method
-      if user_method && user_method.is_a?(Proc)
-        # clear the non-root default namespace
-        namespace = begin
-          _name = active_admin_namespace.name
-          (_name && _name.is_a?(Array)) ? _name.drop(1) : _name
+      if user_method
+        if user_method.is_a?(Proc)
+          # clear the non-root default namespace
+          namespace = begin
+            _name = active_admin_namespace.name
+            (_name && _name.is_a?(Array)) ? _name.drop(1) : _name
+          end
+          send(user_method.call(namespace))
+        else
+          send(user_method)
         end
-        send(user_method.call(namespace))
-      else
-        send(user_method)
       end
     end
     helper_method :current_active_admin_user
