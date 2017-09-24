@@ -33,20 +33,26 @@ ActiveAdmin.after_load do |app|
       # The current namespace will be the default scope.
       app.namespaces.map(&:name).each do |name|
         # clear the non-root default namespace
-        ns = (name.is_a?(Array) && app.default_namespace != :root) ? name.drop(1) : name
-        scope ns do |scope|
-          scope.where namespace: ns.to_s
+        _name = if name.is_a?(Array)
+                  ([:root, false] & name).present? ? name.drop(1) : name
+                else
+                  name
+                end
+        scope _name do |scope|
+          scope.where namespace: _name.to_s
         end
       end
 
       # Store the author and namespace
       before_save do |comment|
         # clear the non-root default namespace
-        namespace = begin
-          ns = active_admin_config.namespace.name
-          (ns.is_a?(Array) && app.default_namespace != :root) ? ns.drop(1) : ns
-        end
-        comment.namespace = namespace
+        _name = active_admin_config.namespace.name
+        _name = if _name.is_a?(Array)
+                  ([:root, false] & _name).present? ? _name.drop(1) : _name
+                else
+                  _name
+                end
+        comment.namespace = _name
         comment.author = current_active_admin_user
       end
 

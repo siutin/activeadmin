@@ -51,7 +51,15 @@ module ActiveAdmin
 
         def comments_url(*args)
           parts = []
-          parts << active_admin_namespace.name unless active_admin_namespace.root?
+          # parts << active_admin_namespace.name unless active_admin_namespace.root?
+          parts << unless active_admin_namespace.root?
+                     _name = active_admin_namespace.name
+                     _name = if _name.is_a?(Array)
+                               ([:root, false] & _name).present? ? _name.drop(1) : _name
+                             else
+                               _name
+                             end
+                   end
           parts << active_admin_namespace.comments_registration_name.underscore
           parts << 'path'
           send parts.join('_'), *args
@@ -59,7 +67,15 @@ module ActiveAdmin
 
         def comment_form_url
           parts = []
-          parts << active_admin_namespace.name unless active_admin_namespace.root?
+          # parts << active_admin_namespace.name unless active_admin_namespace.root?
+          parts << unless active_admin_namespace.root?
+                     _name = active_admin_namespace.name
+                     _name = if _name.is_a?(Array)
+                               ([:root, false] & _name).present? ? _name.drop(1) : _name
+                             else
+                               _name
+                             end
+                   end
           parts << active_admin_namespace.comments_registration_name.underscore.pluralize
           parts << 'path'
           send parts.join '_'

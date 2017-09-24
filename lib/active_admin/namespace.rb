@@ -91,19 +91,27 @@ module ActiveAdmin
     #   Namespace.new(:root).module_name # => nil
     #
     def module_name
-      root? ? nil : if @name.is_a?(Array)
-                      @name.map(&:to_s).map(&:camelize).join('::')
-                    else
-                      @name.camelize
-                    end
+      _name = @name
+      unless root?
+        if _name.is_a?(Array)
+          _name = ([:root, false] & _name).present? ? _name.drop(1) : _name
+          _name.map(&:to_s).map(&:camelize).join('::')
+        else
+          _name.camelize
+        end
+      end
     end
 
     def route_prefix
-      root? ? nil : if @name.is_a?(Array)
-                      @name.map(&:to_s).join('_').underscore
-                    else
-                      @name
-                    end
+      _name = @name
+      unless root?
+        if _name.is_a?(Array)
+          _name = ([:root, false] & _name).present? ? _name.drop(1) : _name
+          _name.map(&:to_s).map(&:to_s).join('_').underscore
+        else
+          _name
+        end
+      end
     end
 
     # Unload all the registered resources for this namespace
@@ -155,7 +163,7 @@ module ActiveAdmin
       if logout_link_path
         computed_logout_link_path = if logout_link_path.is_a?(Proc)
                                       # clear the non-root default namespace
-                                      namespace = (name && name.is_a?(Array) && application.default_namespace != :root) ? name.drop(1) : name
+                                      namespace = name && name.is_a?(Array) ? name.drop(1) : name
                                       logout_link_path.call(namespace)
                                     else
                                       logout_link_path

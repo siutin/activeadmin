@@ -24,10 +24,14 @@ module ActiveAdmin
             root namespace.root_to_options.merge(to: namespace.root_to)
           else
             if namespace.name.is_a?(Array)
+              _namespace_name = begin
+                _name = namespace.name
+                ([:root, false] & _name).present? ? _name.drop(1) : _name
+              end
               proc = Proc.new do
                 root namespace.root_to_options.merge(to: namespace.root_to, as: :root)
               end
-              (namespace.name.reverse.inject(proc) { |n, c| Proc.new { namespace c, namespace.route_options.dup, &n } }).call
+              (_namespace_name.reverse.inject(proc) { |n, c| Proc.new { namespace c, namespace.route_options.dup, &n } }).call
             else
               namespace namespace.name, namespace.route_options.dup do
                 root namespace.root_to_options.merge(to: namespace.root_to, as: :root)
@@ -68,7 +72,11 @@ module ActiveAdmin
                 proc = Proc.new do
                   instance_exec &nested
                 end
-                config.namespace.name.reverse.inject(proc) { |n, c| Proc.new { namespace c, config.namespace.route_options.dup, &n } }.call
+                _namespace_name = begin
+                  _name = config.namespace.name
+                  ([:root, false] & _name).present? ? _name.drop(1) : _name
+                end
+                _namespace_name.reverse.inject(proc) { |n, c| Proc.new { namespace c, config.namespace.route_options.dup, &n } }.call
               else
                 namespace config.namespace.name, config.namespace.route_options.dup do
                   instance_exec &nested
