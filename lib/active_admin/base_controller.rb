@@ -36,8 +36,8 @@ module ActiveAdmin
 
     # Calls the authentication method as defined in ActiveAdmin.authentication_method
     def authenticate_active_admin_user
-      auth_method = active_admin_namespace.authentication_method
-      if auth_method
+      if active_admin_namespace.authentication_method
+        auth_method = active_admin_namespace.authentication_method
         if auth_method.is_a?(Proc)
           # clear the non-root default namespace
           namespace = begin
@@ -52,8 +52,8 @@ module ActiveAdmin
     end
 
     def current_active_admin_user
-      user_method = active_admin_namespace.current_user_method
-      if user_method
+      if active_admin_namespace.current_user_method
+        user_method = active_admin_namespace.current_user_method
         if user_method.is_a?(Proc)
           # clear the non-root default namespace
           namespace = begin
