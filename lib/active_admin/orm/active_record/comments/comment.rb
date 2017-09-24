@@ -21,11 +21,11 @@ module ActiveAdmin
 
     def self.find_for_resource_in_namespace(resource, namespace)
       _namespace, namespace_key = if namespace.is_a?(Array)
-                                      _name = namespace.drop(1)
-                                      [_name, _name]
-                                    else
-                                      [namespace, namespace.to_sym]
-                                    end
+                                    _name = namespace.drop(1)
+                                    [_name, _name]
+                                  else
+                                    [namespace, namespace.to_sym]
+                                  end
       where(
           resource_type: resource_type(resource),
           resource_id: resource,
