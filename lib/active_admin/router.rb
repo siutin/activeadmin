@@ -19,9 +19,17 @@ module ActiveAdmin
         if namespace.root?
           router.root namespace.root_to_options.merge(to: namespace.root_to)
         else
-          router.namespace namespace.name, namespace.route_options.dup do
-            router.root namespace.root_to_options.merge(to: namespace.root_to, as: :root)
+          if namespace.name.is_a?(Array)
+            proc = Proc.new do
+              router.root namespace.root_to_options.merge(to: namespace.root_to, as: :root)
+            end
+            (namespace.name.reverse.inject(proc) { |n, c| Proc.new { router.namespace c, namespace.route_options.dup, &n } }).call
+          else
+            router.namespace namespace.name, namespace.route_options.dup do
+              router.root namespace.root_to_options.merge(to: namespace.root_to, as: :root)
+            end
           end
+
         end
       end
     end
@@ -105,8 +113,15 @@ module ActiveAdmin
     end
 
     def define_namespace(config)
-      router.namespace config.namespace.name, config.namespace.route_options.dup do
-        define_routes(config)
+      if config.namespace.name.is_a?(Array)
+        proc = Proc.new do
+          define_routes(config)
+        end
+        config.namespace.name.reverse.inject(proc) { |n, c| Proc.new { router.namespace c, config.namespace.route_options.dup, &n } }.call
+      else
+        router.namespace config.namespace.name, config.namespace.route_options.dup do
+          define_routes(config)
+        end
       end
     end
   end
