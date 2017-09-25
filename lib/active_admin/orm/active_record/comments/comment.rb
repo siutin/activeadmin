@@ -1,14 +1,10 @@
 module ActiveAdmin
   class Comment < ActiveRecord::Base
 
-    self.table_name = 'active_admin_comments'
+    self.table_name = "#{table_name_prefix}active_admin_comments#{table_name_suffix}"
 
     belongs_to :resource, polymorphic: true
     belongs_to :author,   polymorphic: true
-
-    if defined? ProtectedAttributes
-      attr_accessible :resource, :resource_id, :resource_type, :body, :namespace
-    end
 
     validates_presence_of :body, :namespace, :resource
 

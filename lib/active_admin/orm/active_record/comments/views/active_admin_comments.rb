@@ -12,7 +12,7 @@ module ActiveAdmin
 
         def build(resource)
           @resource = resource
-          @comments = ActiveAdmin::Comment.find_for_resource_in_namespace resource, active_admin_namespace.name
+          @comments = ActiveAdmin::Comment.find_for_resource_in_namespace(resource, active_admin_namespace.name).page(params[:page])
           super(title, for: resource)
           build_comments
         end
@@ -20,11 +20,18 @@ module ActiveAdmin
         protected
 
         def title
-          I18n.t 'active_admin.comments.title_content', count: @comments.count
+          I18n.t 'active_admin.comments.title_content', count: @comments.total_count
         end
 
         def build_comments
-          @comments.any? ? @comments.each(&method(:build_comment)) : build_empty_message
+          if @comments.any?
+            @comments.each(&method(:build_comment))
+            div page_entries_info(@comments).html_safe, class: 'pagination_information'
+          else
+            build_empty_message
+          end
+
+          text_node paginate @comments
           build_comment_form
         end
 

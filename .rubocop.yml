@@ -2,6 +2,7 @@
 
 AllCops:
   DisabledByDefault: true
+  TargetRubyVersion: 2.2
 
   Exclude:
     - spec/rails/**/*
@@ -17,10 +18,41 @@ AllCops:
 
   StyleGuideCopsOnly: false
 
-Style/ExtraSpacing:
+Lint/EndAlignment:
+  Enabled: true
+
+Layout/AccessModifierIndentation:
+  Enabled: true
+
+Layout/CaseIndentation:
+  Enabled: true
+
+Layout/CommentIndentation:
+  Enabled: true
+
+Layout/ElseAlignment:
+  Enabled: true
+
+Layout/EmptyLines:
+  Enabled: true
+
+Layout/EndOfLine:
+  Enabled: true
+
+Layout/ExtraSpacing:
+  Enabled: true
+
+Style/Encoding:
+  EnforcedStyle: never
   Enabled: true
 
 Style/HashSyntax:
+  Enabled: true
+
+Layout/IndentationConsistency:
+  Enabled: true
+
+Layout/IndentationWidth:
   Enabled: true
 
 Style/PredicateName:
@@ -34,11 +66,20 @@ Style/PredicateName:
     - has_many
     - has_many_actions
 
-Style/TrailingWhitespace:
+Style/TrailingCommaInArguments:
   Enabled: true
 
-Style/SpaceAfterComma:
+Layout/TrailingBlankLines:
   Enabled: true
 
-Style/SpaceInsideParens:
+Layout/TrailingWhitespace:
+  Enabled: true
+
+Layout/SpaceAfterComma:
+  Enabled: true
+
+Layout/SpaceAroundEqualsInParameterDefault:
+  Enabled: true
+
+Layout/SpaceInsideParens:
   Enabled: true

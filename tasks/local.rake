@@ -1,5 +1,5 @@
 desc 'Runs a command agains the local sample application'
-task local: :enforce_version do
+task :local do
   Rake::Task['setup'].invoke(false,
                              '.test-rails-apps',
                              'rails_template_with_data')
@@ -10,7 +10,7 @@ task local: :enforce_version do
   argv = ARGV[1..-1]
 
   # If it's a rails command, or we're using Rails 5, auto add the rails script
-  rails_commands = %w(generate console server dbconsole g c s runner)
+  rails_commands = %w(generate console server db dbconsole g c s runner)
 
   if Rails::VERSION::MAJOR >= 5 || rails_commands.include?(argv[0])
     argv.unshift('rails')

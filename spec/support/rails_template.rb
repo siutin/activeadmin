@@ -2,8 +2,6 @@
 
 copy_file File.expand_path('../templates/manifest.js', __FILE__), 'app/assets/config/manifest.js', force: true
 
-create_file 'app/assets/stylesheets/some-random-css.css'
-create_file 'app/assets/javascripts/some-random-js.js'
 create_file 'app/assets/images/a/favicon.ico'
 
 generate :model, 'post title:string body:text published_date:date author_id:integer ' +
@@ -14,7 +12,7 @@ create_file 'app/models/post.rb', <<-RUBY.strip_heredoc, force: true
     belongs_to :author, class_name: 'User'
     has_many :taggings
     accepts_nested_attributes_for :author
-    accepts_nested_attributes_for :taggings
+    accepts_nested_attributes_for :taggings, allow_destroy: true
 
     ransacker :custom_title_searcher do |parent|
       parent.table[:title]
@@ -28,9 +26,6 @@ create_file 'app/models/post.rb', <<-RUBY.strip_heredoc, force: true
       # nothing to see here
     end
 
-    if defined? ProtectedAttributes
-      attr_accessible :id, :title, :body, :starred, :author, :position, :published_date, :author_id, :custom_category_id, :category
-    end
   end
 RUBY
 copy_file File.expand_path('../templates/post_decorator.rb', __FILE__), 'app/models/post_decorator.rb'
@@ -43,11 +38,8 @@ create_file 'app/models/blog/post.rb', <<-RUBY.strip_heredoc, force: true
     belongs_to :author, class_name: 'User'
     has_many :taggings
     accepts_nested_attributes_for :author
-    accepts_nested_attributes_for :taggings
+    accepts_nested_attributes_for :taggings, allow_destroy: true
 
-    if defined? ProtectedAttributes
-      attr_accessible :title, :body, :starred, :author, :position, :published_date, :author_id, :custom_category_id, :category
-    end
   end
 RUBY
 
@@ -64,10 +56,6 @@ create_file 'app/models/user.rb', <<-RUBY.strip_heredoc, force: true
       parent.table[:age]
     end
 
-    if defined? ProtectedAttributes
-      attr_accessible :first_name, :last_name, :username,  :age
-    end
-
     def display_name
       "\#{first_name} \#{last_name}"
     end
@@ -77,10 +65,6 @@ RUBY
 create_file 'app/models/profile.rb', <<-RUBY.strip_heredoc, force: true
   class Profile < ActiveRecord::Base
     belongs_to :user
-
-    if defined? ProtectedAttributes
-      attr_accessible :bio
-    end
   end
 RUBY
 
@@ -92,42 +76,24 @@ create_file 'app/models/category.rb', <<-RUBY.strip_heredoc, force: true
     has_many :posts, foreign_key: :custom_category_id
     has_many :authors, through: :posts
     accepts_nested_attributes_for :posts
-
-    if defined? ProtectedAttributes
-      attr_accessible :name, :description
-    end
   end
 RUBY
 
 generate :model, 'store name:string'
 
-# Generate a model with string ids
 generate :model, 'tag name:string'
-gsub_file Dir['db/migrate/*_create_tags.rb'].first, /\:tags do .*/, <<-RUBY.strip_heredoc
-  :tags, id: false, primary_key: :id do |t|
-    t.string :id
-RUBY
 create_file 'app/models/tag.rb', <<-RUBY.strip_heredoc, force: true
   class Tag < ActiveRecord::Base
-    self.primary_key = :id
-    before_create :set_id
-
-    private
-    def set_id
-      self.id = SecureRandom.uuid
-    end
-
-    if defined? ProtectedAttributes
-      attr_accessible :name
-    end
   end
 RUBY
 
-generate :model, 'tagging post_id:integer tag_id:integer'
+generate :model, 'tagging post_id:integer tag_id:integer position:integer'
 create_file 'app/models/tagging.rb', <<-RUBY.strip_heredoc, force: true
   class Tagging < ActiveRecord::Base
     belongs_to :post
     belongs_to :tag
+
+    delegate :name, to: :tag, prefix: true
   end
 RUBY
 
@@ -135,7 +101,7 @@ gsub_file 'config/environments/test.rb', /  config.cache_classes = true/, <<-RUB
 
   config.cache_classes = !ENV['CLASS_RELOADING']
   config.action_mailer.default_url_options = {host: 'example.com'}
-  config.assets.precompile += %w( some-random-css.css some-random-js.js a/favicon.ico )
+  config.assets.precompile += %w( a/favicon.ico )
 
   config.active_record.maintain_test_schema = false
 

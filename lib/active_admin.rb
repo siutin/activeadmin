@@ -3,16 +3,13 @@ require 'set'
 
 require 'ransack'
 require 'ransack_ext'
-require 'bourbon'
 require 'kaminari'
 require 'formtastic'
 require 'formtastic_i18n'
-require 'sass-rails'
 require 'inherited_resources'
 require 'jquery-rails'
-require 'jquery-ui-rails'
-require 'coffee-rails'
 require 'arbre'
+require 'sprockets/es6'
 
 require 'active_admin/helpers/i18n'
 
@@ -33,7 +30,6 @@ module ActiveAdmin
   autoload :Deprecation,              'active_admin/deprecation'
   autoload :Devise,                   'active_admin/devise'
   autoload :DSL,                      'active_admin/dsl'
-  autoload :Event,                    'active_admin/event'
   autoload :FormBuilder,              'active_admin/form_builder'
   autoload :Inputs,                   'active_admin/inputs'
   autoload :Localizers,               'active_admin/localizers'
@@ -93,7 +89,7 @@ module ActiveAdmin
     #
     # @param [Block] block A block to call each time (before) AA loads resources
     def before_load(&block)
-      ActiveSupport::Notifications.subscribe ActiveAdmin::Application::BeforeLoadEvent, &ActiveAdmin::Event.wrap_block_for_active_support_notifications(block)
+      ActiveSupport::Notifications.subscribe ActiveAdmin::Application::BeforeLoadEvent, &wrap_block_for_active_support_notifications(block)
     end
 
     # A callback is triggered each time (after) Active Admin loads the configuration files. This
@@ -111,7 +107,13 @@ module ActiveAdmin
     #
     # @param [Block] block A block to call each time (after) AA loads resources
     def after_load(&block)
-      ActiveSupport::Notifications.subscribe ActiveAdmin::Application::AfterLoadEvent, &ActiveAdmin::Event.wrap_block_for_active_support_notifications(block)
+      ActiveSupport::Notifications.subscribe ActiveAdmin::Application::AfterLoadEvent, &wrap_block_for_active_support_notifications(block)
+    end
+
+    private
+
+    def wrap_block_for_active_support_notifications block
+      proc { |event, *args| block.call *args }
     end
 
   end

@@ -101,9 +101,9 @@ RSpec.describe ActiveAdmin::FormBuilder do
       end
     end
 
-   it "should generate a text input" do
-      expect(body).to have_selector("input[type=text][name='post[title]']")
-    end
+    it "should generate a text input" do
+       expect(body).to have_selector("input[type=text][name='post[title]']")
+     end
     it "should generate a textarea" do
       expect(body).to have_selector("textarea[name='post[body]']")
     end
@@ -637,7 +637,7 @@ RSpec.describe ActiveAdmin::FormBuilder do
         end
 
         it "should wrap the destroy field in an li with class 'has_many_delete'" do
-          expect(body).to have_selector(".has_many_container > fieldset > ol > li.has_many_delete > input", count: 1)
+          expect(body).to have_selector(".has_many_container > fieldset > ol > li.has_many_delete > input", count: 1, visible: false)
         end
       end
 
@@ -647,7 +647,7 @@ RSpec.describe ActiveAdmin::FormBuilder do
         end
 
         it "should not have a boolean field for _destroy" do
-          expect(body).not_to have_selector("input[name='category[posts_attributes][#{child_num}][_destroy]']")
+          expect(body).not_to have_selector("input[name='category[posts_attributes][#{child_num}][_destroy]']", visible: :all)
         end
 
         it "should not have a check box with 'Remove' as its label" do
@@ -943,15 +943,15 @@ RSpec.describe ActiveAdmin::FormBuilder do
     "[:title].each{ |r| f.input r }"               => "post_title",
     "[:title].map { |r| f.input r }"               => "post_title",
   }.each do |source, selector|
-   it "should properly buffer `#{source}`" do
-     body = build_form do |f|
-       f.inputs do
-         eval source
-         eval source
-       end
-     end
-     expect(body).to have_selector("[id=#{selector}]", count: 2)
-   end
+    it "should properly buffer `#{source}`" do
+      body = build_form do |f|
+        f.inputs do
+          eval source
+          eval source
+        end
+      end
+      expect(body).to have_selector("[id=#{selector}]", count: 2, visible: :all)
+    end
   end
 
   describe "datepicker input" do

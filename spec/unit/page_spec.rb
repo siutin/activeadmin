@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'rails_helper'
 require File.expand_path('config_shared_examples', File.dirname(__FILE__))
 
@@ -70,7 +68,6 @@ module ActiveAdmin
     it "should not belong_to anything" do
       expect(config.belongs_to?).to eq false
     end
-
 
     it "should not have any action_items" do
       expect(config.action_items?).to eq false

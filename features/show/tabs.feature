@@ -5,6 +5,7 @@ Feature: Show - Tabs
   Background:
     Given a post with the title "Hello World" written by "Jane Doe" exists
 
+  @javascript
   Scenario: Set a method to be called on the resource as the title
     Given a show configuration of:
     """
@@ -15,13 +16,17 @@ Feature: Show - Tabs
               span "tab 1"
             end
 
-            tab :details do
+            tab 'テスト', id: :test_non_ascii do
               span "tab 2"
             end
           end
         end
       end
     """
-    Then I should see two tabs "Overview" and "Details"
-    And I should see "tab 1"
-    And I should see "tab 2"
+
+    Then I should see two tabs "Overview" and "テスト"
+    And I should see the element "#overview span"
+    And I should not see the element "#test_non_ascii span"
+    Then I follow "テスト"
+    And I should see the element "#test_non_ascii span"
+    And I should not see the element "#overview span"

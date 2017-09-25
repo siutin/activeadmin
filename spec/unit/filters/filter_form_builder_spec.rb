@@ -59,6 +59,14 @@ RSpec.describe ActiveAdmin::Filters::ViewHelper do
         expect(body).to have_selector("label", text: "Title from proc")
       end
     end
+
+    describe "input html as proc" do
+      let(:body) { Capybara.string(filter :title, as: :select, input_html: proc{ {'data-ajax-url': '/'} }) }
+
+      it "should render proper label" do
+        expect(body).to have_selector('select[data-ajax-url="/"]')
+      end
+    end
   end
 
   describe "string attribute" do
@@ -165,9 +173,6 @@ RSpec.describe ActiveAdmin::Filters::ViewHelper do
     it "should generate a date greater than" do
       expect(body).to have_selector("input.datepicker[name='q[published_date_gteq]']")
     end
-    it "should generate a seperator" do
-      expect(body).to have_selector("span.seperator")
-    end
     it "should generate a date less than" do
       expect(body).to have_selector("input.datepicker[name='q[published_date_lteq]']")
     end
@@ -178,9 +183,6 @@ RSpec.describe ActiveAdmin::Filters::ViewHelper do
 
     it "should generate a date greater than" do
       expect(body).to have_selector("input.datepicker[name='q[created_at_gteq_datetime]']")
-    end
-    it "should generate a seperator" do
-      expect(body).to have_selector("span.seperator")
     end
     it "should generate a date less than" do
       expect(body).to have_selector("input.datepicker[name='q[created_at_lteq_datetime]']")
