@@ -67,6 +67,32 @@ RSpec.describe ActiveAdmin, "Routing", type: :routing do
       end
     end
 
+    context "when in nested admin namespace" do
+      before(:each) do
+        load_resources { ActiveAdmin.register(Post, namespace: [:foo, :bar]) }
+      end
+
+      after(:each) do
+        namespaces.instance_variable_get(:@namespaces).delete([:foo, :bar])
+      end
+
+      it "should route the index path" do
+        expect(admin_foo_bar_posts_path).to eq "/admin/foo/bar/posts"
+      end
+
+      it "should route the show path" do
+        expect(admin_foo_bar_post_path(1)).to eq "/admin/foo/bar/posts/1"
+      end
+
+      it "should route the new path" do
+        expect(new_admin_foo_bar_post_path).to eq "/admin/foo/bar/posts/new"
+      end
+
+      it "should route the edit path" do
+        expect(edit_admin_foo_bar_post_path(1)).to eq "/admin/foo/bar/posts/1/edit"
+      end
+    end
+
     context "when in root namespace" do
       before(:each) do
         load_resources { ActiveAdmin.register(Post, namespace: false) }

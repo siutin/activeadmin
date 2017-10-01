@@ -151,6 +151,12 @@ RSpec.describe ActiveAdmin::Application do
       expect(admin).to eq application.namespaces[:admin]
     end
 
+    it "should return an instantiated nested-namespace" do
+      ns = application.namespace [:foo, :bar]
+      expect(ns).to eq application.namespaces[[:foo, :bar]]
+      application.namespaces.instance_variable_get(:@namespaces).delete([:foo, :bar])
+    end
+
     it "should yield an existing namespace" do
       expect {
         application.namespace :admin do |ns|
