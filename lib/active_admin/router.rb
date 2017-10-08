@@ -20,16 +20,14 @@ module ActiveAdmin
           router.root namespace.root_to_options.merge(to: namespace.root_to)
         else
           if namespace.name.is_a?(Array)
-            proc = Proc.new do
+            define_nested_namespace(namespace.name, namespace) do
               router.root namespace.root_to_options.merge(to: namespace.root_to, as: :root)
             end
-            (namespace.name.reverse.inject(proc) { |n, c| Proc.new { router.namespace c, namespace.route_options.dup, &n } }).call
           else
             router.namespace namespace.name, namespace.route_options.dup do
               router.root namespace.root_to_options.merge(to: namespace.root_to, as: :root)
             end
           end
-
         end
       end
     end
@@ -114,13 +112,23 @@ module ActiveAdmin
 
     def define_namespace(config)
       if config.namespace.name.is_a?(Array)
-        proc = Proc.new do
+        define_nested_namespace(config.namespace.name, config.namespace) do
           define_routes(config)
         end
-        config.namespace.name.reverse.inject(proc) { |n, c| Proc.new { router.namespace c, config.namespace.route_options.dup, &n } }.call
       else
         router.namespace config.namespace.name, config.namespace.route_options.dup do
           define_routes(config)
+        end
+      end
+    end
+
+    def define_nested_namespace(names, namespace)
+      curr, *rest = names
+      router.namespace curr, namespace.route_options.dup do
+        if rest.present?
+          define_nested_namespace(rest, namespace, &Proc.new)
+        else
+          yield
         end
       end
     end
