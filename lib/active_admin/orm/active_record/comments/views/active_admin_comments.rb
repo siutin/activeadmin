@@ -12,7 +12,7 @@ module ActiveAdmin
 
         def build(resource)
           @resource = resource
-          @comments = ActiveAdmin::Comment.find_for_resource_in_namespace(resource, active_admin_namespace.name_path).page(params[:page])
+          @comments = ActiveAdmin::Comment.find_for_resource_in_namespace(resource, active_admin_namespace.name_path).includes(:author).page(params[:page])
           super(title, for: resource)
           build_comments
         end
