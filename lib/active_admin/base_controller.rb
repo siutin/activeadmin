@@ -39,7 +39,7 @@ module ActiveAdmin
       if active_admin_namespace.authentication_method
         auth_method = active_admin_namespace.authentication_method
         if auth_method.is_a?(Proc)
-          namespace = active_admin_namespace.name
+          namespace = active_admin_namespace.name_path
           send(auth_method.call(namespace))
         else
           send(auth_method)
@@ -51,7 +51,7 @@ module ActiveAdmin
       if active_admin_namespace.current_user_method
         user_method = active_admin_namespace.current_user_method
         if user_method.is_a?(Proc)
-          namespace = active_admin_namespace.name
+          namespace = active_admin_namespace.name_path
           send(user_method.call(namespace))
         else
           send(user_method)

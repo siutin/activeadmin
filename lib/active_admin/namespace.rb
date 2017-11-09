@@ -33,27 +33,20 @@ module ActiveAdmin
 
     RegisterEvent = 'active_admin.namespace.register'.freeze
 
-    attr_reader :application, :resources, :menus
+    attr_reader :application, :resources, :menus, :name_path, :original_name
 
     def initialize(application, name)
       @application = application
-      @name = if name.is_a?(Array)
-                default_namespace = application.default_namespace
-                [:root, false, nil].include?(default_namespace) || (name.first == default_namespace) ? name : [default_namespace] + name
-              else
-                name.to_s.underscore
-              end
+      @original_name = name
+      build_name_path(Array(name))
       @resources = ResourceCollection.new
       register_module unless root?
       build_menu_collection
     end
 
     def name
-      if @name.is_a?(Array)
-        @name
-      else
-        @name.to_sym
-      end
+      Deprecation.warn "name replaced by name_path now that namespaces can be nested."
+      Array(original_name).first.to_s.underscore.to_sym
     end
 
     def settings
@@ -98,7 +91,7 @@ module ActiveAdmin
     end
 
     def root?
-      name == :root
+      original_name == :root
     end
 
     # Returns the name of the module if required. Will be nil if none
@@ -109,11 +102,11 @@ module ActiveAdmin
     #   Namespace.new(:root).module_name # => nil
     #
     def module_name
-      root? ? nil : Array.wrap(@name).map(&:to_s).map(&:camelize).join('::')
+      root? ? nil : name_path.map(&:to_s).map(&:camelize).join('::')
     end
 
     def route_prefix
-      root? ? nil : Array.wrap(@name).map(&:to_s).join('_').underscore
+      root? ? nil : name_path.map(&:to_s).join('_').underscore
     end
 
     # Unload all the registered resources for this namespace
@@ -158,7 +151,7 @@ module ActiveAdmin
     def add_logout_button_to_menu(menu, priority = 20, html_options = {})
       if logout_link_path
         computed_logout_link_path = if logout_link_path.is_a?(Proc)
-                                      logout_link_path.call(name)
+                                      logout_link_path.call(name_path)
                                     else
                                       logout_link_path
                                     end
@@ -188,6 +181,11 @@ module ActiveAdmin
     end
 
     protected
+
+    def build_name_path(name)
+      default_namespace = application.default_namespace
+      @name_path = [:root, false, nil].include?(default_namespace) || (name.first == default_namespace) ? name : [default_namespace] + name
+    end
 
     def build_menu_collection
       @menus = MenuCollection.new
