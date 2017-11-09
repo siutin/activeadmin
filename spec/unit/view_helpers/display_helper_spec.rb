@@ -13,7 +13,7 @@ RSpec.describe ActiveAdmin::ViewHelpers::DisplayHelper do
   include ActionView::Helpers::TranslationHelper
 
   def active_admin_namespace
-    active_admin_application.namespaces[:admin]
+    active_admin_application.namespaces[[:admin]]
   end
 
   def authorized?(*)
