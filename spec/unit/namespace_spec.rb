@@ -23,15 +23,25 @@ RSpec.describe ActiveAdmin::Namespace do
       let(:namespace){ ActiveAdmin::Namespace.new(application, :admin) }
       it_behaves_like :when_new_expectation do
         it "should have a name" do
-          expect(namespace.name).to eq :admin
+          ActiveSupport::Deprecation.silence do
+            expect(namespace.name).to eq :admin
+          end
+        end
+        it "should have a name_path" do
+          expect(namespace.name_path).to eq [:admin]
         end
       end
     end
     context "with a 1-level nested namespaces" do
       let(:namespace){ ActiveAdmin::Namespace.new(application, [:admin]) }
+      it "should have a name" do
+        ActiveSupport::Deprecation.silence do
+          expect(namespace.name).to eq :admin
+        end
+      end
       it_behaves_like :when_new_expectation do
-        it "should have a name" do
-          expect(namespace.name).to eq [:admin]
+        it "should have a name_path" do
+          expect(namespace.name_path).to eq [:admin]
         end
       end
     end
@@ -40,7 +50,12 @@ RSpec.describe ActiveAdmin::Namespace do
       let(:namespace){ ActiveAdmin::Namespace.new(application, [:admin, :foo, :bar]) }
       it_behaves_like :when_new_expectation do
         it "should have a name" do
-          expect(namespace.name).to eq [:admin, :foo, :bar]
+          ActiveSupport::Deprecation.silence do
+            expect(namespace.name).to eq :admin
+          end
+        end
+        it "should have a name_path" do
+          expect(namespace.name_path).to eq [:admin, :foo, :bar]
         end
       end
     end
@@ -142,7 +157,7 @@ RSpec.describe ActiveAdmin::Namespace do
       context "with logout_link_path as Symbol" do
         let(:mock_url) { double }
         before { application.logout_link_path = :destroy_admin_user_session_path }
-        before { allow(menu["Logout"]).to receive(:destroy_admin_user_session_path).and_return(mock_url) }
+        before { allow(menu["Logout"]).to receive(:url).and_return(mock_url) }
         it { expect(menu["Logout"].url).to eq(mock_url) }
       end
 

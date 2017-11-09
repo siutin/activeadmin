@@ -142,7 +142,10 @@ RSpec.describe ActiveAdmin::Application do
 
     it "should yield a new namespace" do
       application.namespace :new_namespace do |ns|
-        expect(ns.name).to eq :new_namespace
+        ActiveSupport::Deprecation.silence do
+          expect(ns.name).to eq :new_namespace
+          expect(ns.name_path).to eq [:admin, :new_namespace]
+        end
       end
     end
 
