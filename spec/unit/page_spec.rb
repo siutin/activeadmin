@@ -60,9 +60,11 @@ module ActiveAdmin
     end
 
     describe "#namespace_name" do
+      before { ActiveSupport::Deprecation.behavior = :stderr }
       it "returns the name of the namespace" do
         expect(config.namespace_name).to eq "admin"
       end
+      after { ActiveSupport::Deprecation.behavior = :stderr }
     end
 
     it "should not belong_to anything" do

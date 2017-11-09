@@ -22,16 +22,26 @@ RSpec.describe ActiveAdmin::Namespace do
     context "with a single-level namespaces" do
       let(:namespace){ ActiveAdmin::Namespace.new(application, :admin) }
       it_behaves_like :when_new_expectation do
-        it "should have a name" do
-          expect(namespace.name).to eq :admin
+        context "should have a name" do
+          before { ActiveSupport::Deprecation.behavior = :stderr }
+          it { expect(namespace.name).to eq :admin }
+          after { ActiveSupport::Deprecation.behavior = :stderr }
+        end
+        it "should have a name_path" do
+          expect(namespace.name_path).to eq [:admin]
         end
       end
     end
     context "with a 1-level nested namespaces" do
       let(:namespace){ ActiveAdmin::Namespace.new(application, [:admin]) }
+      context "should have a name" do
+        before { ActiveSupport::Deprecation.behavior = :stderr }
+        it { expect(namespace.name).to eq :admin }
+        after { ActiveSupport::Deprecation.behavior = :stderr }
+      end
       it_behaves_like :when_new_expectation do
-        it "should have a name" do
-          expect(namespace.name).to eq [:admin]
+        it "should have a name_path" do
+          expect(namespace.name_path).to eq [:admin]
         end
       end
     end
@@ -39,8 +49,13 @@ RSpec.describe ActiveAdmin::Namespace do
     context "with a 3-level nested namespaces" do
       let(:namespace){ ActiveAdmin::Namespace.new(application, [:admin, :foo, :bar]) }
       it_behaves_like :when_new_expectation do
-        it "should have a name" do
-          expect(namespace.name).to eq [:admin, :foo, :bar]
+        context "should have a name" do
+          before { ActiveSupport::Deprecation.behavior = :stderr }
+          it { expect(namespace.name).to eq :admin }
+          after { ActiveSupport::Deprecation.behavior = :stderr }
+        end
+        it "should have a name_path" do
+          expect(namespace.name_path).to eq [:admin, :foo, :bar]
         end
       end
     end
