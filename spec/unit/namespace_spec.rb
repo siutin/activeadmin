@@ -157,7 +157,7 @@ RSpec.describe ActiveAdmin::Namespace do
       context "with logout_link_path as Symbol" do
         let(:mock_url) { double }
         before { application.logout_link_path = :destroy_admin_user_session_path }
-        before { allow(menu["Logout"]).to receive(:destroy_admin_user_session_path).and_return(mock_url) }
+        before { allow(menu["Logout"]).to receive(:url).and_return(mock_url) }
         it { expect(menu["Logout"].url).to eq(mock_url) }
       end
 
