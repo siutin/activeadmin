@@ -22,10 +22,10 @@ RSpec.describe ActiveAdmin::Namespace do
     context "with a single-level namespaces" do
       let(:namespace){ ActiveAdmin::Namespace.new(application, :admin) }
       it_behaves_like :when_new_expectation do
-        context "should have a name" do
-          before { ActiveSupport::Deprecation.behavior = :stderr }
-          it { expect(namespace.name).to eq :admin }
-          after { ActiveSupport::Deprecation.behavior = :stderr }
+        it "should have a name" do
+          ActiveSupport::Deprecation.silence do
+            expect(namespace.name).to eq :admin
+          end
         end
         it "should have a name_path" do
           expect(namespace.name_path).to eq [:admin]
@@ -34,10 +34,10 @@ RSpec.describe ActiveAdmin::Namespace do
     end
     context "with a 1-level nested namespaces" do
       let(:namespace){ ActiveAdmin::Namespace.new(application, [:admin]) }
-      context "should have a name" do
-        before { ActiveSupport::Deprecation.behavior = :stderr }
-        it { expect(namespace.name).to eq :admin }
-        after { ActiveSupport::Deprecation.behavior = :stderr }
+      it "should have a name" do
+        ActiveSupport::Deprecation.silence do
+          expect(namespace.name).to eq :admin
+        end
       end
       it_behaves_like :when_new_expectation do
         it "should have a name_path" do
@@ -49,10 +49,10 @@ RSpec.describe ActiveAdmin::Namespace do
     context "with a 3-level nested namespaces" do
       let(:namespace){ ActiveAdmin::Namespace.new(application, [:admin, :foo, :bar]) }
       it_behaves_like :when_new_expectation do
-        context "should have a name" do
-          before { ActiveSupport::Deprecation.behavior = :stderr }
-          it { expect(namespace.name).to eq :admin }
-          after { ActiveSupport::Deprecation.behavior = :stderr }
+        it "should have a name" do
+          ActiveSupport::Deprecation.silence do
+            expect(namespace.name).to eq :admin
+          end
         end
         it "should have a name_path" do
           expect(namespace.name_path).to eq [:admin, :foo, :bar]
