@@ -74,7 +74,7 @@ module ActiveAdmin
     def namespace(name)
       name ||= :root
 
-      namespace = namespaces[name] ||= begin
+      namespace = namespaces[build_name_path(name)] ||= begin
         namespace = Namespace.new(self, name)
         ActiveSupport::Notifications.publish ActiveAdmin::Namespace::RegisterEvent, namespace
         namespace
@@ -163,6 +163,11 @@ module ActiveAdmin
     end
 
     private
+
+    def build_name_path(name)
+      names = Array(name).map { |n| n == true || n == false || n.nil? ? n : n.to_sym }
+      [:root, false, nil].include?(default_namespace) || [:root, default_namespace].include?(names.first) ? names : [default_namespace] + names
+    end
 
     def register_default_assets
       stylesheets['active_admin.css'] = { media: 'screen' }

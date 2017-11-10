@@ -33,12 +33,12 @@ module ActiveAdmin
 
     RegisterEvent = 'active_admin.namespace.register'.freeze
 
-    attr_reader :application, :resources, :menus, :name_path, :original_name
+    attr_reader :application, :resources, :menus, :name_path
 
     def initialize(application, name)
       @application = application
-      @original_name = name
-      build_name_path(Array(name))
+      @name = Array(name).first.to_s.underscore.to_sym
+      build_name_path(name)
       @resources = ResourceCollection.new
       register_module unless root?
       build_menu_collection
@@ -46,7 +46,7 @@ module ActiveAdmin
 
     def name
       Deprecation.warn "name replaced by name_path now that namespaces can be nested."
-      Array(original_name).first.to_s.underscore.to_sym
+      @name
     end
 
     def settings
@@ -91,7 +91,7 @@ module ActiveAdmin
     end
 
     def root?
-      original_name == :root
+      @name == :root
     end
 
     # Returns the name of the module if required. Will be nil if none
@@ -184,7 +184,8 @@ module ActiveAdmin
 
     def build_name_path(name)
       default_namespace = application.default_namespace
-      @name_path = [:root, false, nil].include?(default_namespace) || (name.first == default_namespace) ? name : [default_namespace] + name
+      names = Array(name).map { |n| n == true || n == false || n.nil? ? n : n.to_sym }
+      @name_path = [:root, false, nil].include?(default_namespace) || [:root, default_namespace].include?(names.first) ? names : [default_namespace] + names
     end
 
     def build_menu_collection
