@@ -151,19 +151,19 @@ RSpec.describe ActiveAdmin::Application do
 
     it "should return an instantiated namespace" do
       admin = application.namespace :admin
-      expect(admin).to eq application.namespaces[:admin]
+      expect(admin).to eq application.namespaces[[:admin]]
     end
 
     it "should return an instantiated nested-namespace" do
       ns = application.namespace [:foo, :bar]
-      expect(ns).to eq application.namespaces[[:foo, :bar]]
-      application.namespaces.instance_variable_get(:@namespaces).delete([:foo, :bar])
+      expect(ns).to eq application.namespaces[[:admin, :foo, :bar]]
+      application.namespaces.instance_variable_get(:@namespaces).delete([:admin, :foo, :bar])
     end
 
     it "should yield an existing namespace" do
       expect {
         application.namespace :admin do |ns|
-          expect(ns).to eq application.namespaces[:admin]
+          expect(ns).to eq application.namespaces[[:admin]]
           raise "found"
         end
       }.to raise_error("found")
@@ -172,8 +172,8 @@ RSpec.describe ActiveAdmin::Application do
     it "should not pollute the global app" do
       expect(application.namespaces).to be_empty
       application.namespace(:brand_new_ns)
-      expect(application.namespaces.names).to eq [:brand_new_ns]
-      expect(ActiveAdmin.application.namespaces.names).to eq [:admin]
+      expect(application.namespaces.names).to eq [[:admin, :brand_new_ns]]
+      expect(ActiveAdmin.application.namespaces.names).to eq [[:admin]]
     end
   end
 

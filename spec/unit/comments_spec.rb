@@ -30,9 +30,9 @@ RSpec.describe "Comments" do
         end
 
         it "should not return a comment for the same resource in a different namespace" do
-          ActiveAdmin.application.namespaces[:public] = ActiveAdmin.application.namespaces[:admin]
+          ActiveAdmin.application.namespaces[[:admin, :public]] = ActiveAdmin.application.namespaces[[:admin]]
           expect(ActiveAdmin::Comment.find_for_resource_in_namespace(post, 'public')).to eq []
-          ActiveAdmin.application.namespaces.instance_variable_get(:@namespaces).delete(:public)
+          ActiveAdmin.application.namespaces.instance_variable_get(:@namespaces).delete([:admin, :public])
         end
 
         it "should not return a comment for a different resource" do
@@ -95,13 +95,13 @@ RSpec.describe "Comments" do
         let(:namespace_name) { [:foo, :bar] }
         before { ActiveAdmin.application.namespace [:foo, :bar] }
         it_behaves_like :find_for_resource_in_namespace_expectation
-        after { ActiveAdmin.application.namespaces.instance_variable_get(:@namespaces).delete([:foo, :bar]) }
+        after { ActiveAdmin.application.namespaces.instance_variable_get(:@namespaces).delete([:admin, :foo, :bar]) }
 
         context "name should not include default namespace" do
           let(:namespace_name) { [:admin, :foo, :bar] }
           before { ActiveAdmin.application.namespace [:foo, :bar] }
           it_behaves_like :find_for_resource_in_namespace_expectation
-          after { ActiveAdmin.application.namespaces.instance_variable_get(:@namespaces).delete([:foo, :bar]) }
+          after { ActiveAdmin.application.namespaces.instance_variable_get(:@namespaces).delete([:admin, :foo, :bar]) }
         end
       end
 

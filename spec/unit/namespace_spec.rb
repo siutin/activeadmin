@@ -72,7 +72,7 @@ RSpec.describe ActiveAdmin::Namespace do
         ActiveAdmin.register Post, namespace: false
 
         # To prevent unload! from unregistering ::PostsController
-        ActiveAdmin.application.namespaces.instance_variable_get(:@namespaces).delete(:root)
+        ActiveAdmin.application.namespaces.instance_variable_get(:@namespaces).delete([:root])
 
         # To force Admin::PostsController to not be there
         Admin.send(:remove_const, 'PostsController')
