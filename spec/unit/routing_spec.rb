@@ -15,7 +15,7 @@ RSpec.describe ActiveAdmin, "Routing", type: :routing do
   let(:namespaces) { ActiveAdmin.application.namespaces }
 
   it "should only have the namespaces necessary for route testing" do
-    expect(namespaces.names).to eq [:admin]
+    expect(namespaces.names).to eq [[:admin]]
   end
 
   it "should route to the admin dashboard" do
@@ -33,12 +33,12 @@ RSpec.describe ActiveAdmin, "Routing", type: :routing do
   describe "route_options" do
     context "with a custom path set in route_options" do
       before do
-        namespaces[:admin].route_options = { path: '/custom-path' }
+        namespaces[[:admin]].route_options = { path: '/custom-path' }
         reload_routes!
       end
 
       after do
-        namespaces[:admin].route_options = {}
+        namespaces[[:admin]].route_options = {}
         reload_routes!
       end
 
@@ -73,7 +73,7 @@ RSpec.describe ActiveAdmin, "Routing", type: :routing do
       end
 
       after(:each) do
-        namespaces.instance_variable_get(:@namespaces).delete([:foo, :bar])
+        namespaces.instance_variable_get(:@namespaces).delete([:admin, :foo, :bar])
       end
 
       it "should route the index path" do
@@ -99,7 +99,7 @@ RSpec.describe ActiveAdmin, "Routing", type: :routing do
       end
 
       after(:each) do
-        namespaces.instance_variable_get(:@namespaces).delete(:root)
+        namespaces.instance_variable_get(:@namespaces).delete([:root])
       end
 
       it "should route the index path" do
@@ -210,7 +210,7 @@ RSpec.describe ActiveAdmin, "Routing", type: :routing do
       end
 
       after(:each) do
-        namespaces.instance_variable_get(:@namespaces).delete([:foo, :bar])
+        namespaces.instance_variable_get(:@namespaces).delete([:admin, :foo, :bar])
       end
 
       it "should route the nested index path" do
@@ -238,7 +238,7 @@ RSpec.describe ActiveAdmin, "Routing", type: :routing do
         end
 
         after do
-          namespaces.instance_variable_get(:@namespaces).delete([:foo, :bar])
+          namespaces.instance_variable_get(:@namespaces).delete([:admin, :foo, :bar])
         end
 
         it "should properly route the collection action" do
@@ -266,7 +266,7 @@ RSpec.describe ActiveAdmin, "Routing", type: :routing do
       end
 
       after(:each) do
-        namespaces.instance_variable_get(:@namespaces).delete([:foo, :bar])
+        namespaces.instance_variable_get(:@namespaces).delete([:admin, :foo, :bar])
       end
 
       it "should route to the page under /admin" do
@@ -280,7 +280,7 @@ RSpec.describe ActiveAdmin, "Routing", type: :routing do
       end
 
       after(:each) do
-        namespaces.instance_variable_get(:@namespaces).delete(:root)
+        namespaces.instance_variable_get(:@namespaces).delete([:root])
       end
 
       it "should route to page under /" do
