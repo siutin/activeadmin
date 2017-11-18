@@ -15,18 +15,12 @@ module ActiveAdmin
       ResourceController::Decorators.undecorate(resource).class.base_class.name.to_s
     end
 
-    def self.build_name_path(name)
-      names = Array(name).map { |n| n == true || n == false || n.nil? ? n : n.to_sym }
-      default_namespace = ActiveAdmin.application.default_namespace
-      [:root, false, nil].include?(default_namespace) || [:root, default_namespace].include?(names.first) ? names : [default_namespace] + names
-    end
-
     def self.find_for_resource_in_namespace(resource, name)
       where(
         resource_type: resource_type(resource),
         resource_id:   resource,
         namespace:     name.to_s
-      ).order(ActiveAdmin.application.namespaces[build_name_path(name)].comments_order)
+      ).order(ActiveAdmin.application.namespaces[ActiveAdmin.application.build_name_path(name)].comments_order)
     end
 
     def set_resource_type

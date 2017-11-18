@@ -38,7 +38,7 @@ module ActiveAdmin
     def initialize(application, name)
       @application = application
       @name = Array(name).first.to_s.underscore.to_sym
-      build_name_path(name)
+      @name_path = ActiveAdmin.application.build_name_path(name)
       @resources = ResourceCollection.new
       register_module unless root?
       build_menu_collection
@@ -181,12 +181,6 @@ module ActiveAdmin
     end
 
     protected
-
-    def build_name_path(name)
-      default_namespace = application.default_namespace
-      names = Array(name).map { |n| n == true || n == false || n.nil? ? n : n.to_sym }
-      @name_path = [:root, false, nil].include?(default_namespace) || [:root, default_namespace].include?(names.first) ? names : [default_namespace] + names
-    end
 
     def build_menu_collection
       @menus = MenuCollection.new
