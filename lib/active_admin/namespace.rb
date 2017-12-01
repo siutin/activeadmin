@@ -149,19 +149,13 @@ module ActiveAdmin
     # @param [Hash] html_options An options hash to pass along to link_to
     #
     def add_logout_button_to_menu(menu, priority = 20, html_options = {})
-      if logout_link_path
-        computed_logout_link_path = if logout_link_path.is_a?(Proc)
-                                      logout_link_path.call(name_path)
-                                    else
-                                      logout_link_path
-                                    end
-        if computed_logout_link_path
-          html_options = html_options.reverse_merge(method: logout_link_method || :get)
-          menu.add id: 'logout', priority: priority, html_options: html_options,
-                   label:   -> { I18n.t 'active_admin.logout' },
-                   url:   computed_logout_link_path,
-                   if:    :current_active_admin_user?
-        end
+      computed_logout_link_path = logout_link_path.is_a?(Proc) ? logout_link_path.call(name_path) : logout_link_path
+      if computed_logout_link_path
+        html_options = html_options.reverse_merge(method: logout_link_method || :get)
+        menu.add id: 'logout', priority: priority, html_options: html_options,
+                 label:   -> { I18n.t 'active_admin.logout' },
+                 url:   computed_logout_link_path,
+                 if:    :current_active_admin_user?
       end
     end
 
